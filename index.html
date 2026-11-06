@@ -18,19 +18,19 @@
   h1 { font-size: 24px; line-height: 1.3; margin: 0 0 16px; letter-spacing: -0.01em; }
   .offer { border: 1.5px solid var(--red); border-radius: 12px; padding: 12px 14px; font-size: 16px; margin-bottom: 4px; }
   .offer b { color: var(--red); }
-  .offer .count { display: block; font-size: 14px; color: var(--sub); margin-top: 2px; }
   label { display: block; font-size: 15px; font-weight: 600; margin: 18px 0 6px; }
   .hint { font-weight: 400; color: var(--sub); font-size: 14px; }
   input[type=text], input[type=tel] { width: 100%; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; padding: 0 14px; font: inherit; color: var(--ink); background: #fff; }
   input:focus { outline: none; border-color: var(--ink); }
   .bad { border-color: var(--red) !important; }
   .err { color: var(--red); font-size: 14px; margin-top: 6px; min-height: 0; }
-  .pick { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border: 1.5px dashed #A8A8A8; border-radius: 12px; color: var(--sub); font-size: 15px; text-align: center; cursor: pointer; overflow: hidden; position: relative; }
-  .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .pick img { width: 52px; height: 52px; object-fit: cover; display: block; }
-  .menu { border: 1.5px solid var(--line); border-radius: 12px; padding: 4px 14px 14px; margin-top: 14px; }
-  .menu .row { display: grid; grid-template-columns: 1fr 120px; gap: 8px; }
-  .menu label { margin-top: 10px; }
+  .cnt { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .cnt label { margin: 0; }
+  .cnt input { position: absolute; opacity: 0; pointer-events: none; }
+  .cnt span { display: grid; place-items: center; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+  .cnt input:checked + span { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .cnt input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 2px; }
+  .cnt.bad span { border-color: var(--red); }
   .agree { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 400; color: var(--sub); margin-top: 16px; cursor: pointer; }
   .agree input { width: 22px; height: 22px; margin: 1px 0 0; flex: none; accent-color: var(--ink); }
   .agree.bad { color: var(--red); }
@@ -49,81 +49,48 @@
 </style>
 </head><body><main>
 
-<div class="trial"><b>시범용 화면</b> · 사진은 이 휴대폰 밖으로 나가지 않아요. 가게·메뉴 이름과 연락처만 저희가 종이에 받아 적어요.</div>
+<div class="trial"><b>시범용 화면</b> · 입력하신 내용은 Beads 팀에만 전달돼요.</div>
 
-<!-- 1/2 메뉴 -->
 <section id="s1">
-  <p class="step">사장님 가게 신청 1/2</p>
-  <h1>손님 생각이 가장 궁금한<br>메뉴 3개를 골라 주세요</h1>
-  <div class="offer">메뉴 사진 3장을 올려 주시면 <b>첫 달(12월) 무료</b><span class="count" id="count">사진 0 / 3장</span></div>
+  <p class="step">사장님 가게 신청</p>
+  <h1>정식판이 열리면<br>문자로 알려 드릴게요</h1>
+  <div class="offer">지금 신청하시면 <b>첫 달(12월) 무료</b></div>
 
   <label for="store">가게 이름</label>
-  <input id="store" type="text" autocomplete="off" placeholder="예: 예시반점">
+  <input id="store" type="text" autocomplete="off" maxlength="60" placeholder="예: 예시반점">
 
-  <div id="menus"></div>
-  <p class="err" id="e1" role="alert"></p>
-  <button class="go" id="next">다음 · 연락처</button>
-</section>
-
-<!-- 2/2 연락처 -->
-<section id="s2" hidden>
-  <p class="step">사장님 가게 신청 2/2</p>
-  <h1>정식판이 열리면<br>문자로 알려 드릴게요</h1>
+  <label id="cntLabel">손님 생각을 받아 보고 싶은 메뉴 수</label>
+  <div class="cnt" id="cnt" role="radiogroup" aria-labelledby="cntLabel"></div>
 
   <label for="tel">휴대폰 번호</label>
   <input id="tel" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13">
 
-  <label class="agree" id="agreeBox"><input id="agree" type="checkbox"><span>정식판 안내와 첫 달 무료 안내 문자에만 쓰고, 2026년 12월 31일이 지나면 지우는 데 동의해요.</span></label>
+  <label class="agree" id="agreeBox"><input id="agree" type="checkbox"><span>가게 이름·메뉴 수·휴대폰 번호를 정식판 안내와 첫 달 무료 안내 문자에만 쓰고, 2026년 12월 31일이 지나면 지우는 데 동의해요. 동의하지 않으셔도 괜찮아요(그러면 신청은 되지 않아요).</span></label>
 
-  <p class="err" id="e2" role="alert"></p>
-  <button class="go" id="finish">신청 끝내기</button>
-  <button class="back" id="prev">이전</button>
+  <p class="err" id="e1" role="alert"></p>
+  <button class="go" id="finish">신청하기</button>
 </section>
 
-<!-- 끝 -->
 <section id="s3" class="done" hidden>
   <div class="mark">✓</div>
   <h1>신청을 마쳤어요</h1>
-  <p style="color:var(--sub);margin:0" id="doneText"></p>
+  <p style="color:var(--sub);margin:0">정식판이 열리면 문자로 링크를 보내 드릴게요.<br>첫 달(12월)은 무료예요.</p>
   <div class="sum" id="sum"></div>
   <button class="back" id="reset">처음부터 (다음 가게)</button>
 </section>
 
-<p class="note">서강대 창업팀 Beads · 시범용 창 · 사진은 저장되지 않음</p>
+<p class="note">서강대 창업팀 Beads · 시범용 창</p>
 </main>
 
 <script>
+// Apps Script web app that appends one row to the owner sheet (see apps-script.gs)
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx6G3DhUcF5IgBZ62TYuDZDlyjvygqUhf4d6e64DOsf5SiV7I-YywCLE6LbhlpEdkIC0w/exec';
 const $ = id => document.getElementById(id);
-const show = n => { ['s1', 's2', 's3'].forEach((s, i) => $(s).hidden = i !== n - 1); scrollTo(0, 0); };
+const show = n => { $('s1').hidden = n !== 1; $('s3').hidden = n !== 3; scrollTo(0, 0); };
 
-const examples = [['짜장면', '7,000'], ['짬뽕', '8,000'], ['탕수육', '15,000']];
-$('menus').innerHTML = examples.map(([n, p], i) => `
-  <div class="menu">
-    <div class="row">
-      <div><label for="m${i}">메뉴 ${i + 1}</label><input id="m${i}" type="text" autocomplete="off" placeholder="예: ${n}"></div>
-      <div><label for="p${i}">가격 <span class="hint">(선택)</span></label><input id="p${i}" type="tel" inputmode="numeric" autocomplete="off" placeholder="${p}"></div>
-    </div>
-    <label>메뉴 사진</label>
-    <div class="pick"><span id="pt${i}">📷 사진 찍기 / 앨범에서 고르기</span><img id="pi${i}" alt="" hidden><input id="ph${i}" type="file" accept="image/*" aria-label="메뉴 ${i + 1} 사진 고르기"></div>
-  </div>`).join('');
-
-const photos = () => examples.filter((_, i) => $('ph' + i).files.length > 0).length;
-const updateCount = () => {
-  const n = photos();
-  $('count').textContent = n === 3 ? '사진 3 / 3장 · 첫 달 무료 대상이에요' : `사진 ${n} / 3장`;
-};
-
-examples.forEach((_, i) => {
-  $('ph' + i).addEventListener('change', () => {
-    const f = $('ph' + i).files[0];
-    if (f) { $('pi' + i).src = URL.createObjectURL(f); $('pi' + i).hidden = false; $('pt' + i).textContent = '사진 바꾸기'; } // stays on this phone, never uploaded
-    updateCount();
-  });
-  $('p' + i).addEventListener('input', e => {
-    const d = e.target.value.replace(/\D/g, '').slice(0, 7);
-    e.target.value = d ? Number(d).toLocaleString('ko-KR') : '';
-  });
-});
+const COUNTS = ['1', '2', '3', '4', '5', '6+'];
+$('cnt').innerHTML = COUNTS.map(c => `<label><input type="radio" name="cnt" value="${c}"><span>${c === '6+' ? '6개↑' : c + '개'}</span></label>`).join('');
+const count = () => (document.querySelector('input[name=cnt]:checked') || {}).value || '';
 
 $('tel').addEventListener('input', e => {
   const d = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -133,7 +100,7 @@ $('tel').addEventListener('input', e => {
 });
 const telOk = v => /^0\d{8,10}$/.test(v.replace(/\D/g, ''));
 
-function check(fields, errBox, msg = '빨간 칸을 채워 주세요.') {
+function check(fields, errBox, msg) {
   let first = null;
   fields.forEach(([el, ok]) => { el.classList.toggle('bad', !ok); if (!ok && !first) first = el; });
   errBox.textContent = first ? msg : '';
@@ -141,34 +108,24 @@ function check(fields, errBox, msg = '빨간 칸을 채워 주세요.') {
   return !first;
 }
 
-const names = () => [0, 1, 2].map(i => $('m' + i).value.trim());
-
-$('next').onclick = () => {
-  const n = names();
-  const ok = check([[$('store'), $('store').value.trim()], ...n.map((v, i) => [$('m' + i), v])], $('e1'));
+$('finish').onclick = async () => {
+  const store = $('store').value.trim(), tel = $('tel').value;
+  const ok = check([[$('store'), store], [$('cnt'), count()], [$('tel'), telOk(tel)], [$('agreeBox'), $('agree').checked]], $('e1'),
+    !store || !count() ? '빨간 칸을 채워 주세요.' : !telOk(tel) ? '휴대폰 번호를 확인해 주세요.' : '동의에 체크해 주세요.');
   if (!ok) return;
-  if (new Set(n).size < 3) { $('e1').textContent = '서로 다른 메뉴 3개를 넣어 주세요.'; return; }
-  show(2);
-};
-$('prev').onclick = () => show(1);
-
-$('finish').onclick = () => {
-  const ok = check([[$('tel'), telOk($('tel').value)], [$('agreeBox'), $('agree').checked]], $('e2'),
-    !telOk($('tel').value) ? '휴대폰 번호를 확인해 주세요.' : '동의에 체크해 주세요.');
-  if (!ok) return;
-  const n = names(), p = photos(), t = new Date();
+  const btn = $('finish');
+  btn.disabled = true; btn.textContent = '보내는 중…';
+  try {
+    const r = await fetch(ENDPOINT, { method: 'POST', body: new URLSearchParams({ store, menus: count(), tel, agree: 'yes' }) });
+    if (!(await r.json()).ok) throw new Error('rejected');
+  } catch {
+    $('e1').textContent = '전송이 안 됐어요. 인터넷을 확인하고 한 번 더 눌러 주세요.';
+    btn.disabled = false; btn.textContent = '신청하기';
+    return;
+  }
   const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  $('doneText').innerHTML = p === 3
-    ? '정식판이 열리면 문자로 링크를 보내 드릴게요.<br>오늘 고르신 메뉴·사진을 그대로 올리시면 <b>첫 달은 무료</b>예요.'
-    : '정식판이 열리면 문자로 링크를 보내 드릴게요.<br>그때 메뉴 사진 3장을 올리시면 <b>첫 달은 무료</b>예요.';
-  // summary is for the field team to copy onto the paper log (H3 = owner picked 3 menus + left a number)
-  $('sum').innerHTML = [
-    ['가게', esc($('store').value.trim())],
-    ...n.map((v, i) => [`메뉴 ${i + 1}`, esc(v) + ($('p' + i).value ? ` · ${$('p' + i).value}원` : '') + ($('ph' + i).files.length ? ' · 사진' : '')]),
-    ['사진', `${p} / 3장${p === 3 ? ' (첫 달 무료)' : ''}`],
-    ['연락처', esc($('tel').value)],
-    ['마친 시각', t.toTimeString().slice(0, 5)],
-  ].map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join('');
+  $('sum').innerHTML = [['가게', esc(store)], ['메뉴 수', count() === '6+' ? '6개 이상' : count() + '개'], ['연락처', esc(tel)], ['마친 시각', new Date().toTimeString().slice(0, 5)]]
+    .map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join('');
   show(3);
 };
 
